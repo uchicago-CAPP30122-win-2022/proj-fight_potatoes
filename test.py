@@ -12,8 +12,8 @@ lang:en -is:retweet'
 '''
 
 # us-china query
-query = 'China (Trump OR Biden OR trade war OR Xi Jinping OR Eileen Gu OR Taiwan\
-OR Hong Kong OR CCP OR TikTok OR Huawei OR tariffs OR human rights) lang:en -is:retweet'
+query = '(China (Trump OR Biden OR trade war OR Xi Jinping OR Eileen Gu OR Taiwan\
+OR Hong Kong OR CCP OR TikTok OR Huawei OR tariffs OR human rights)) lang:en -is:retweet'
 
 file_name = 'tweets.csv'
 
