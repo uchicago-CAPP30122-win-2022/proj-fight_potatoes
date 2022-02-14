@@ -18,9 +18,10 @@ OR Hong Kong OR CCP OR TikTok OR Huawei OR tariffs OR human rights OR Xinjiang O
 OR Ned Price)) lang:en -is:retweet'
 
 file_name = 'data/tweets_china_021422.csv'
-#file_name = 'test_china.csv'
-with open(file_name, 'w') as f:
-#with open(file_name, 'a+') as f:
+
+
+#with open(file_name, 'w') as f:
+with open(file_name, 'a+') as f:
     writer = csv.writer(f)
     for tweet in tweepy.Paginator(client.search_recent_tweets, query=query,
             tweet_fields=['text', 'created_at', 'author_id', 'id', 'public_metrics'],
