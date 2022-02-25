@@ -1,3 +1,4 @@
+
 from textblob import TextBlob
 import csv
 import pandas as pd
@@ -8,9 +9,23 @@ from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import seaborn as sb
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier 
 
-tweets = pd.read_csv("data/tweets_china_022122.csv")
-tweets.columns = ["Date","id1","id2","popularity","content"]
+tweets1 = pd.read_csv("data/tweets_china_022122.csv")
+tweets1.columns = ["Date","id1","id2","popularity","content"]
+tweets2 = pd.read_csv('data/tweets_china_021822.csv')
+tweets2.columns = ["Date","id1","id2","popularity","content"]
+tweets3 = pd.read_csv('data/tweets_china_021422.csv')
+tweets3.columns = ["Date","id1","id2","popularity","content"]
+tweets = pd.concat([tweets1, tweets2, tweets3], axis = 0)
+tweets = tweets.drop_duplicates()
+
+
+#tweets.columns = ["Date","id1","id2","popularity","content"]
 
 sent = []
 sub = []
@@ -41,6 +56,18 @@ sp.drop('Date', axis = 1, inplace = True)
 # merge stock and tweet data
 df = tweets1.merge(sp, how = "inner", on = "date")
 
+# categorical dependent var
+inc_dec = []
+for i in df['Change %']:
+    ch = float(i.strip('%'))/100
+    if ch >= 0:
+        inc_dec.append(1)
+    elif ch < 0:
+        inc_dec.append(-1)
+
+df['change'] = pd.Series(inc_dec)
+
+'''
 # summary plots?
 plt.scatter(x = 'sentiment', y = 'Price', data = df, s = 100, alpha = 0.3, edgecolor = 'white')
 plt.title('Twitter Sentiments about China vs Stock Price', fontsize = 16)
@@ -48,15 +75,47 @@ plt.ylabel('Stock Price ($)', fontsize = 12)
 plt.xlabel('Sentiment', fontsize = 12)
 
 plt.savefig('sent_price.png')
+'''
 #split train/test data
-np.random.seed(5678)
-train, test = train_test_split(df, test_size = 0.1, random_state = 42)
+train, test = train_test_split(df, test_size = 0.5, random_state = 42)
 
-
-# build model
-y_train = train.pop('Price')
+y_train = train.pop('change')
 x_train = train[['sentiment', 'subjectivity']]
+y_test = test.pop('change')
+x_test = test[['sentiment', 'subjectivity']]
 
+
+# knn
+neigh = KNeighborsClassifier(n_neighbors=2)
+neigh.fit(x_train, y_train) 
+neigh.score(x_test, y_test)
+neigh_cv = cross_val_score(neigh, x_train, y_train, cv=2) 
+print(neigh_cv.mean()) 
+
+# logit
+logreg = LogisticRegression(random_state=42)
+logreg.fit(x_train, y_train)
+logreg.score(x_test, y_test)
+logreg_cv = cross_val_score(logreg, x_train, y_train, cv=2)
+print(logreg_cv.mean())
+
+# svc
+svm_linear = SVC( kernel = 'linear')
+svm_linear.fit(x_train, y_train)
+svm_linear.score(x_test, y_test)
+svm_linear_cv = cross_val_score(svm_linear, x_train, y_train, cv=2)
+print(svm_linear_cv.mean())
+
+# random forest
+forest_reg = RandomForestClassifier(random_state=42)
+forest_reg.fit(x_train, y_train)
+forest_reg.score(x_test, y_test)
+forest_reg_cv = cross_val_score(forest_reg, x_train, y_train, cv=2) 
+print(forest_reg_cv.mean())  
+
+
+
+'''
 #train model
 #sklearn
 lr = LinearRegression()
@@ -82,3 +141,4 @@ sm_x_var = sm.add_constant(x_var)
 mlr_model = sm.OLS(y_var, sm_x_var)
 mlr_reg = mlr_model.fit()
 print(mlr_reg.summary())
+'''
