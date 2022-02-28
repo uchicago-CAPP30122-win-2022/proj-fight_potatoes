@@ -1,6 +1,7 @@
-
 from textblob import TextBlob
 import csv
+import os
+import math
 import pandas as pd
 import numpy as np
 import sklearn
@@ -15,6 +16,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import RandomForestClassifier 
 
+'''
 tweets1 = pd.read_csv("data/tweets_china_022122.csv")
 tweets1.columns = ["Date","id1","id2","popularity","content"]
 tweets2 = pd.read_csv('data/tweets_china_021822.csv')
@@ -23,9 +25,14 @@ tweets3 = pd.read_csv('data/tweets_china_021422.csv')
 tweets3.columns = ["Date","id1","id2","popularity","content"]
 tweets = pd.concat([tweets1, tweets2, tweets3], axis = 0)
 tweets = tweets.drop_duplicates()
-
-
-#tweets.columns = ["Date","id1","id2","popularity","content"]
+'''
+# read in all covid data
+tweets = pd.DataFrame()
+for file in os.listdir('data'):
+    if 'covid' in file:
+        tweets = pd.concat([tweets, pd.read_csv(os.path.join('data',
+        file), names = ["Date", "id1", "id2", "popularity", "content"])], axis = 0)
+tweets.drop_duplicates(inplace = True)
 
 sent = []
 sub = []
@@ -42,12 +49,14 @@ tweets['subjectivity'] = pd.Series(sub)
 tweets['date'] = pd.to_datetime(tweets['Date'])
 tweets['date'] = tweets['date'].dt.date
 
-tweets1 = tweets.groupby('date').agg('mean')
+# remove neutral tweets and aggregate by day
+tweets1 = tweets[(tweets[['sentiment']] != 0).all(axis=1)]
+tweets1 = tweets1.groupby('date').agg('mean')
 # drop irrelevant cols
 tweets1.drop(['id1', 'id2'], axis = 1, inplace = True)
 
 # sp 500 data
-sp = pd.read_csv('S&P 500 Historical Data.csv', header = 0, thousands=',')
+sp = pd.read_csv('S&P 500 Historical Data update.csv', header = 0, thousands=',')
 sp['date'] = pd.to_datetime(sp['Date'])
 sp['date'] = sp['date'].dt.date
 sp.drop('Date', axis = 1, inplace = True)
@@ -63,9 +72,27 @@ for i in df['Change %']:
     if ch >= 0:
         inc_dec.append(1)
     elif ch < 0:
-        inc_dec.append(-1)
+        inc_dec.append(0)
 
 df['change'] = pd.Series(inc_dec)
+
+#extra stuff to maybe include
+forecast_col = 'change'
+forecast_out = int(math.ceil(0.125 * len(df)))
+df['Predicted_change_stock'] = df[forecast_col].shift(-forecast_out)
+buy_or_sell = []
+
+for row in df['change']:
+    if row >= 0:
+        buy_or_sell.append(1)
+    elif row < 0:
+        buy_or_sell.append(-1) 
+
+#Adds -1 or +1 to the column based on if 'Predicted_change' is negative or positive
+df['Buy/Sell'] = buy_or_sell
+
+# The 'Buy/Sell' values need to be shifted up one row to match the 'Predicted_change' values
+df['Buy/Sell'] = df['Buy/Sell'].shift(-1)
 
 '''
 # summary plots?
@@ -77,13 +104,30 @@ plt.xlabel('Sentiment', fontsize = 12)
 plt.savefig('sent_price.png')
 '''
 #split train/test data
-train, test = train_test_split(df, test_size = 0.5, random_state = 42)
+train, test = train_test_split(df, test_size = 0.25, random_state = 42)
 
 y_train = train.pop('change')
 x_train = train[['sentiment', 'subjectivity']]
 y_test = test.pop('change')
 x_test = test[['sentiment', 'subjectivity']]
 
+# knn training--which k has lowest error
+error_rate = []
+#k = 
+for i in range(1, 4):
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(x_train,y_train)
+    pred_i = knn.predict(x_test)
+    error_rate.append(np.mean(pred_i != y_test))
+
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, 4), error_rate, color = 'blue', linestyle = 'dashed', 
+         marker = 'o',markerfacecolor = 'red', markersize = 10)
+plt.title('Error Rate vs. K Value')
+plt.xlabel('K')
+plt.ylabel('Error Rate')
+print("Minimum error:-", min(error_rate),"at K =", error_rate.index(min(error_rate)) + 1)
+plt.show()
 
 # knn
 neigh = KNeighborsClassifier(n_neighbors=2)
