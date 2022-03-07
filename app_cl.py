@@ -44,7 +44,7 @@ app.layout = html.Div([
             options = [
                 {'label':'Apple', 'value':'AAPL' },
                 {'label': 'Google', 'value':'GOOGL'},
-                {'label': 'Lululemon', 'value':'LULU*'},
+                {'label': 'Lululemon', 'value':'LULU'},
                 {'label': 'Tesla', 'value':'TSLA'}
                 ],
             value = 'AAPL')], style = dict(display = 'flex')),
