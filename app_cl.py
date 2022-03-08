@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output
 
 
 app = dash.Dash()
-
+'''
 # df1
 df = pd.read_csv('test.csv', header = 0, thousands=',')
 df['change'] = 100 * (df['Close*'] - df['Open'])/df['Open']
@@ -18,7 +18,8 @@ lst = ['High', 'Low', 'Close*', 'change']
 df_mean = pd.DataFrame()
 for var in lst:
     df_mean[var] = df.groupby('Date')[var].mean()
-
+'''
+df = pd.read_csv('fake_output.csv')
 
 app.layout = html.Div([
         html.Div([
@@ -28,47 +29,52 @@ app.layout = html.Div([
             style = {'padding' : '50px' , 'backgroundColor' : '#3aaab2'}),
 
 
-        html.P([
-            html.Label("Choose a feature "),
-            dcc.Dropdown(id = 'dropdown',
+        html.Div([
+            html.Label("Choose a model "),
+            dcc.Dropdown(id = 'model_dropdown',
             options = [
-                {'label':'High', 'value':'High' },
-                {'label': 'Low', 'value':'Low'},
-                {'label': 'Close', 'value':'Close*'},
-                {'label': 'Change', 'value':'change'}
+                #{'label':'High', 'value':'High' },
+                #{'label': 'Low', 'value':'Low'},
+                #{'label': 'Close', 'value':'Close*'},
+                #{'label': 'Change', 'value':'change'}
+                {'label':'Linear Regression', 'value':'linear' },
+                {'label': 'Logistic Regression', 'value':'logit'},
                 ],
-            value = 'High')], style = dict(display = 'flex') ),
-        html.P([
-            html.Label("Choose a company "),
-            dcc.Dropdown(id = 'co_dropdown',
+            value = 'linear')], style = {'width': '20%', 'display': 'inline-block'} ),
+        html.Div([
+            html.Label("Choose a sector "),
+            dcc.Dropdown(id = 'sector_dropdown',
             options = [
-                {'label':'Apple', 'value':'AAPL' },
-                {'label': 'Google', 'value':'GOOGL'},
-                {'label': 'Lululemon', 'value':'LULU'},
-                {'label': 'Tesla', 'value':'TSLA'}
+                #{'label':'Apple', 'value':'AAPL' },
+                #{'label': 'Google', 'value':'GOOGL'},
+                #{'label': 'Lululemon', 'value':'LULU'},
+                #{'label': 'Tesla', 'value':'TSLA'}
+                {'label':'Information Technology', 'value':'Information Technology' },
+                {'label': 'Financials', 'value':'Financials'},
                 ],
-            value = 'AAPL')], style = dict(display = 'flex')),
+            value = 'Financials')], style = {'width': "20%", 'display': 'inline-block'}),
 
         dcc.Graph(id = 'bar_plot')
 ])
     
     
 @app.callback(Output(component_id='bar_plot', component_property= 'figure'),
-              [Input(component_id='dropdown', component_property= 'value'),
-              Input(component_id='co_dropdown', component_property= 'value')])
-def graph_update(dropdown_value, company_value):
-    df1 = df[df['ticker'] == company_value]
-    fig = go.Figure(go.Scatter(x = df1['Date'], y = df1['{}'.format(dropdown_value)], 
-                    name = '{}'.format(dropdown_value),
+              [Input(component_id='model_dropdown', component_property= 'value'),
+              Input(component_id='sector_dropdown', component_property= 'value')])
+
+def graph_update(model_value, sector_value):
+    df1 = df[(df['industry'] == sector_value) & (df['model'] == model_value)]
+    fig = go.Figure(go.Scatter(x = df1['date'], y = df1['actual'], 
+                    name = 'Actual price using {} model'.format(model_value),
                     line = dict(color = 'firebrick', width = 4)))
 
-    fig.add_trace(go.Scatter(x = df1['Date'], y = df_mean['{}'.format(dropdown_value)],
-                    name = 'Average {}'.format(dropdown_value),
+    fig.add_trace(go.Scatter(x = df1['date'], y = df1['predicted'],
+                    name = 'Predicted price {} model'.format(model_value),
                     line = dict(color = 'blue', width = 2, dash = 'dash')))
     
-    fig.update_layout(title = '{} stock prices over time'.format(company_value),
-                      xaxis_title = 'Dates',
-                      yaxis_title = 'Prices'
+    fig.update_layout(title = 'Actual vs. Predicted for {}'.format(sector_value),
+                      xaxis_title = 'Date',
+                      yaxis_title = 'Price'
                       )
 
     '''                 
