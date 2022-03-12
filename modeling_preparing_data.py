@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[8]:
+# In[1]:
 
 
 import textblob
@@ -21,7 +21,7 @@ import numpy as np
 
 
 
-# In[9]:
+# In[2]:
 
 
 def get_weighted_ps_indicator(filename):
@@ -60,34 +60,13 @@ def get_weighted_ps_indicator(filename):
     return ave_polarity, ave_subjectivity, corpus
 
 
-# In[26]:
+# In[16]:
 
 
-def collect_all_x_and_y(dates, topic, y_filename, stock):
+def collect_y(dates, y_datafile, stock):
     """
-    collect the dependent variable and independent variable of specified dates and topics average directly
-    
-    input:
-        dates: a list of dates, the date should only be trading dates.
-                for example, [214,215,216,217,218,222,223,224,225,228,301,302]
-        topic: string, either "covid" or "china"
-        sp500_filename: for example: 'data/S&P_update.csv'
-        
-    return(tuple): a tuple of average polarity and average subjectivity
     """
-    all_ave_polarity = []
-    all_ave_subjectivity = []
-    corpus = []
-    for date in dates:
-        filename = f"data/tweets_{topic}_0{date}22.csv"
-        ave_polarity, ave_subjectivity, corpus_sub = get_weighted_ps_indicator(filename)
-        all_ave_polarity.append(ave_polarity)
-        all_ave_subjectivity.append(ave_subjectivity)
-        corpus.append(corpus_sub)
-    Xs = np.column_stack([all_ave_polarity, all_ave_subjectivity])
-    
-    y_datafile = pd.read_csv(y_filename, thousands=',')
-    y_datafile.set_index("Date", inplace = True)
+
     y_num = []
     y_dummy = [] 
 
@@ -110,13 +89,77 @@ def collect_all_x_and_y(dates, topic, y_filename, stock):
         
     y_num = np.array(y_num[1:])
     
-    return y_dummy, y_num, Xs, corpus 
+    return y_dummy, y_num
+    
+    
+
+
+# In[13]:
+
+
+def collect_x(dates, topic):
+    """
+    """
+    all_ave_polarity = []
+    all_ave_subjectivity = []
+    corpus = []
+    for date in dates:
+        filename = f"data/tweets_{topic}_0{date}22.csv"
+        ave_polarity, ave_subjectivity, corpus_sub = get_weighted_ps_indicator(filename)
+        all_ave_polarity.append(ave_polarity)
+        all_ave_subjectivity.append(ave_subjectivity)
+        corpus.append(corpus_sub)
+    Xs = np.column_stack([all_ave_polarity, all_ave_subjectivity])
+    
+    return Xs, corpus
+    
+    
 
 
 # In[ ]:
 
 
 
+
+
+# In[ ]:
+
+
+
+
+
+# In[14]:
+
+
+def collect_all_x_and_y(dates, topics, y_filename, stocks):
+    """
+    collect the dependent variable and independent variable of specified dates and topics average directly
+    
+    input:
+        dates: a list of dates, the date should only be trading dates.
+                for example, [214,215,216,217,218,222,223,224,225,228,301,302]
+        topic: string, either "covid" or "china"
+        y_filename: for example: 'data/S&P_update.csv'
+        
+    return(tuple): a tuple of average polarity and average subjectivity
+    """
+    x_dic = {}
+    for topic in topics:
+        x_dic[topic] = collect_x(dates, topic)
+    
+    y_dic = {}
+    y_datafile = pd.read_csv(y_filename, header = 0, thousands=',')
+    y_datafile.set_index("Date", inplace = True)
+    for stock in stocks:
+        y_dic[stock] = collect_y(dates, y_datafile, stock)
+    
+    return y_dic, x_dic
+
+
+# In[17]:
+
+
+# y_dic, x_dic = collect_all_x_and_y(dates = TRAINING_DATES, topics = TOPIC, y_filename = Y_FILENAME, stocks = STOCK)
 
 
 # In[ ]:
