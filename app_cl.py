@@ -11,8 +11,8 @@ from dash.dependencies import Input, Output
 # run model and make relevant dfs
 
 TRAINING_DATES = [214, 215, 216, 217, 218, 222, 223, 224, 225, 228]
-TESTING_DATES = [301, 302, 303, 304]
-Y_FILENAME = 'data/SP500_constituents_update.csv'  # need to combine the y_file into the same file
+TESTING_DATES = [301, 302]
+Y_FILENAME = 'data/SP500_constituents_update.csv'
 TOPIC = ["china", "covid"]
 STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
     'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
@@ -20,7 +20,7 @@ STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
 MODELNAME = ['linear','logistic','KNN', 'SVM']
 
 
-all_models = model.process_all_model()
+all_models = model.process_all_model(modelname = MODELNAME, dates = TRAINING_DATES, topics = TOPIC, y_datafile = Y_FILENAME, stocks = STOCK, test_date = TESTING_DATES)
 
 def to_df(model_object):
     train = pd.DataFrame()
@@ -166,7 +166,7 @@ def graph_update(topic, model_value, sector_value):
                         name = 'Predicted price {} model'.format(model_value),
                         line = {'color': 'blue', 'width': 2, 'dash': 'dash'}))
         
-        fig.update_layout(title = 'Actual vs. Predicted for {} Sector'.format(sector_value),
+        fig.update_layout(title = 'Actual vs. Predicted for {}'.format(sector_value),
                         xaxis_title = 'Date',
                         yaxis_title = 'Price ($)'
                         )
@@ -179,7 +179,7 @@ def graph_update(topic, model_value, sector_value):
 
         fig = go.Figure(go.Bar(x = df2['sector'], y = df2['accuracy']
                         ))
-        fig.update_layout(title = 'Accuracy rate using {} model'.format(model_value),
+        fig.update_layout(title = 'Accuracy rate using the {} model'.format(model_value),
                         xaxis_title = 'Sector',
                         yaxis_title = 'Accuracy rate (%)'
                         )
@@ -256,14 +256,14 @@ def graph_update_tr(topic, model_value, sector_value):
     if model_value == 'linear':
         tr1 = train[(train['topic'] == topic) & (train['sector'] == sector_value) & (train['model'] == model_value)]
         fig1 = go.Figure(go.Scatter(x = tr1['date'], y = tr1['true_y'], 
-                        name = 'Actual price using {} model'.format(model_value),
+                        name = 'Actual price using the {} model'.format(model_value),
                         line = {'color': 'firebrick', 'width': 4}))
 
         fig1.add_trace(go.Scatter(x = tr1['date'], y = tr1['fitted_y'],
                         name = 'Fitted price {} model'.format(model_value),
                         line = {'color': 'blue', 'width': 2, 'dash': 'dash'}))
         
-        fig1.update_layout(title = 'Actual vs. Fitted for {} Sector'.format(sector_value),
+        fig1.update_layout(title = 'Actual vs. Fitted for {}'.format(sector_value),
                         xaxis_title = 'Date',
                         yaxis_title = 'Price ($)'
                         )
