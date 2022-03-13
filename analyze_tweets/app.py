@@ -1,55 +1,18 @@
-import modelling_part2_class_collect_all as model
 import dash
 import dash_html_components as html
 import plotly.graph_objects as go
 from dash import dcc
-import plotly.express as px
 import pandas as pd
 import numpy as np
 from dash.dependencies import Input, Output
-
-# run model and make relevant dfs
-
-TRAINING_DATES = [214, 215, 216, 217, 218, 222, 223, 224, 225]
-TESTING_DATES = [228, 301, 302]
-Y_FILENAME = 'data/SP500_constituents_update.csv'
-TOPIC = ["china", "covid"]
-STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
-    'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
-    'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
-MODELNAME = ['linear','logistic','KNN', 'SVM']
+from analyze import run_model as rm
+from analyze import modelling_part2_class_collect_all as model
 
 
-all_models = model.process_all_model(modelname = MODELNAME, dates = TRAINING_DATES, topics = TOPIC, y_datafile = Y_FILENAME, stocks = STOCK, test_date = TESTING_DATES)
+# run models and get training and testing data outputs
+train, test = rm.concat()
 
-def to_df(model_object):
-    train = pd.DataFrame()
-    train['dt'] = model_object.date
-    train['fitted_y'] = model_object.fitted_value
-    train['true_y'] = model_object.true_y
-    train['topic'] = model_object.topic
-
-    # testing data
-    test = pd.DataFrame()
-    test['predicted'] = model_object.prediction
-    test['actual'] = model_object.true_testing_y
-    test['topic'] = model_object.topic
-    
-    return train, test
-
-train = pd.DataFrame()
-test = pd.DataFrame()
-for name, model in all_models.items():
-    sector, topic, model_name = str.split(name, '_')
-    if sector == 'Close':
-        sector = 'All Sectors'
-    tr, te = to_df(model)
-    tr['model'] = te ['model'] = model_name
-    tr['sector'] = te['sector'] = sector
-    te['dt'] = TESTING_DATES
-    train = pd.concat([train, tr])
-    test = pd.concat([test, te])
-
+# clean date columns
 train['date'] = 2022000 + train.dt
 train['date'] = pd.to_datetime(train['date'], format='%Y%m%d')
 train['date'] = train['date'].dt.date
@@ -69,12 +32,10 @@ all_options = {
     'SVM': ['All Sectors']
 }
 
-#df = pd.read_csv('fake_output.csv')
-#tr = pd.read_csv('fake_training_output.csv')
-
 tabs_styles = {
     'height': '44px'
 }
+
 tab_style = {
     'borderBottom': '1px solid #d6d6d6',
     'padding': '6px',
@@ -282,3 +243,6 @@ def graph_update_tr(topic, model_value, sector_value):
                         )
 
     return fig1
+
+if __name__ == '__main__': 
+    app.run_server()
