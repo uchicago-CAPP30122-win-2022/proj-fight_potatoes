@@ -1,0 +1,5 @@
+classifier,sector1,sector2,sector3,sector4,sector5
+Linear,Health Care,Health Care,Health Care,Health Care,Health Care
+Logit,Financials,Financials,Financials,Financials,Financials
+KNN,Real Estate,Real Estate,Real Estate,Real Estate,Real Estate
+SVMLinear,Materials,Materials,Materials,Materials,Materials
