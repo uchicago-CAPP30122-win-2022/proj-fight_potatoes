@@ -1,12 +1,12 @@
 import dash
 import dash_html_components as html
 import plotly.graph_objects as go
-from dash import dcc
+from dash import dcc, dash_table
 import pandas as pd
 import numpy as np
 from dash.dependencies import Input, Output
 from analyze import run_model as rm
-from analyze import modelling_part2_class_collect_all as model
+#from analyze import modelling_part2_class_collect_0312 as model
 
 
 # run models and get training and testing data outputs
@@ -20,6 +20,8 @@ train['date'] = train['date'].dt.date
 test['date'] = 2022000 + test.dt
 test['date'] = pd.to_datetime(test['date'], format='%Y%m%d')
 test['date'] = test['date'].dt.date
+
+df = pd.read_csv("test_data - Sheet1.csv")
 
 app = dash.Dash()
 
@@ -86,6 +88,10 @@ app.layout = html.Div([
 
         html.H3('Model fit for the training data', style = {'padding': '3px'}),
         dcc.Graph(id = 'training_plot'),
+
+        html.H1("Accuracy of each classifier per sector — Top 5", 
+            style={'textAlign': 'center', 'color': '#7FDBFF'}),
+        dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns]),
 
         dcc.Tabs(id="tabs-styled-with-inline", value='tab-1', children=[
             dcc.Tab(label='About', value='About', style=tab_style, selected_style=tab_selected_style),
@@ -155,9 +161,10 @@ def render_content(tab):
         return html.Div([
             html.H3("""
             Stock prices are influenced by the public attitude towards 
-            the market. Psychological research that emotions play a significant role 
-            in human decision-making. Behavioral finance showed that financial decisions 
-            are influenced by people's emotions and moods. """),
+            the market. Psychological research shows that emotions play a significant role 
+            in human decision-making. Similarly, behavioral finance research shows
+            that financial decisions are influenced by people's emotions and moods. """),
+
             html.H3('''
             Twitter is a popular place for users to express their moods and sentiments 
             towards a variety of topics. We look into how the polarity of sentiments in 
