@@ -28,6 +28,7 @@ def to_df(model_object):
     test['predicted'] = model_object.prediction
     test['actual'] = model_object.true_testing_y
     test['topic'] = model_object.topic
+    test['R2'] = model_object.R2
     
     return train, test
 
