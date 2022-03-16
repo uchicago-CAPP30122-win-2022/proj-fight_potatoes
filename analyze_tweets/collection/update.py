@@ -49,4 +49,4 @@ def add_sector_y_datafile(df, industry):
             if stock_num != 0:                    
                 row[sector] = row[sector] / stock_num
     df = df.iloc[::-1]
-    df.to_csv('data/y_file_update.csv')
+    df.to_csv('analyze_tweets/data/y_file_update.csv')
