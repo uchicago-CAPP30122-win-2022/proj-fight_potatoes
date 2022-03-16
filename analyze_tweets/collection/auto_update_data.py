@@ -10,7 +10,7 @@ def auto_update(today):
     """
     """
     ### THIS PATH ISNT WORKING FOR ME FOR SOME REASON
-    comp = pd.read_csv('data/constituents.csv')
+    comp = pd.read_csv('analyze_tweets/data/constituents.csv')
     comp_lst = pd.Series(comp['Symbol']).str.replace(".", '-')
     comp_lst = list(comp_lst)
     comp_lst = ['SPY'] + comp_lst
