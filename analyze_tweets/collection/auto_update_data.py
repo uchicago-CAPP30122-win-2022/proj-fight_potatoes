@@ -8,8 +8,17 @@ from collection import update
 
 def auto_update(today):
     """
+    To conduct auto update of today's tweets and today's stock price
+
+    input:
+        today: a string, the date of today
+
+    return:
+        the return is already saved in csv 
     """
-    ### THIS PATH ISNT WORKING FOR ME FOR SOME REASON
+ 
+    # collect the data that which industry is containing which stocks
+    # this will be used to compute averate industry stock price
     comp = pd.read_csv('analyze_tweets/data/constituents.csv')
     comp_lst = pd.Series(comp['Symbol']).str.replace(".", '-')
     comp_lst = list(comp_lst)
@@ -20,7 +29,6 @@ def auto_update(today):
     collecting_tweets.collect_tweets("covid", today)
 
     print("----------------------------------- start to collect today's stock data -----------------------------------")
-    # collect stock data
     y_file = yf.download(comp_lst, start='2022-02-04', end = today)    
     
     y_file = update.clean_stock_information(y_file)
