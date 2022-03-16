@@ -8,7 +8,14 @@ import yfinance as yf
 
 def clean_stock_information(df):
     """
+    clean the stock file to make it adaptable for future 
+    data process
+
+    input:
+        df: a dataframe
     
+    return:
+        df: a dataframe which is formatted 
     """
     # drop repetitive col
     dropcolumn = []
@@ -26,6 +33,15 @@ def clean_stock_information(df):
 
 def add_sector_y_datafile(df, industry):
     """
+    to extract industry average stock price
+    using stock price dataframe
+
+    input:
+        df: a dataframe which contains all stock price
+        industry: a dataframe which contains which industry has which stocks
+
+    return:
+        save to csv 
     """
 
     df = df.fillna(0)
