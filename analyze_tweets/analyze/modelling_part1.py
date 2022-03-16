@@ -142,7 +142,7 @@ def collect_x(dates, topic):
     all_ave_polarity = []
     all_ave_subjectivity = []
     for date in dates:
-        filename = f"data/tweets_{topic}_0{date}22.csv"
+        filename = f"analyze_tweets/data/tweets_{topic}_0{date}22.csv"
         ave_polarity, ave_subjectivity, _ = get_weighted_ps_indicator(filename)
         all_ave_polarity.append(ave_polarity)
         all_ave_subjectivity.append(ave_subjectivity)
