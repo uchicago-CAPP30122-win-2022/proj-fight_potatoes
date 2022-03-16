@@ -35,7 +35,10 @@ def process_all_model(modelname, dates, topics, y_datafile, stocks, test_date):
     print("++++++++++++++++++++ starting to train models ++++++++++++++++++++++++++")
     all_model = {}
     
-    selection_on_x = input("Now you can select from polarity(0), subjectivity(1), moving average(2) as the regressors, example: 0 1 (or just press return button if you want them all) : ") \
+    selection_on_x = input('''Now you can select independent 
+    variables from polarity (0), 
+    subjectivity (1), moving average (2) as the regressors, 
+    example: 0 1 (or just press return button if you want them all) : ''') \
         or [0,1,2]
     if type(selection_on_x) is not list:
         selection_on_x =  selection_on_x.split()

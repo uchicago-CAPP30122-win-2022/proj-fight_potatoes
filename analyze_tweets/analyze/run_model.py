@@ -7,19 +7,25 @@ from collection import auto_update_data
 #from analyze import modelling_part2_class_collect_all as model
 
 # "we now have [214, 215, 216, 217, 218, 222, 223, 224, 225, 228, 301, 302, 303, 304, 307, 308, 310, 311, 314, 315, ]] data in our database, you can choose which days to use as training data and which days as testing (or just press return)"
-TRAINING_DATES = input("Enter training dates (list of dates when the market is open), example: 214 215 216 217 218 222 223 (or just press return button if you want the default value) : ")        or [214, 215, 216, 217, 218, 222, 223, 224, 225]
+TRAINING_DATES = input('''Enter training dates (refer to README for all 
+possible dates), example: 214 215 216 217 (or just press 
+return if you want the default value)
+: ''') or [214, 215, 216, 217, 218, 222, 223, 224, 225, 301, 302]
 if type(TRAINING_DATES) is not list:
     TRAINING_DATES =  TRAINING_DATES.split()
     TRAINING_DATES = [int(x) for x in TRAINING_DATES ]
 
-TESTING_DATES = input("Enter testing dates (list of dates >= length 2), example: 301 302 (or just press return button if you want the default value) : ")         or [228, 301, 302]
+TESTING_DATES = input('''Enter testing dates (at least 2), 
+example: 301 302 (or just press return if you want 
+the default value): ''') or [303, 304, 307, 314, 315]
 if type(TESTING_DATES) is not list:
     TESTING_DATES =  TESTING_DATES.split()
     TESTING_DATES = [int(x) for x in TESTING_DATES ]
 
 Y_FILENAME = 'analyze_tweets/data/SP500_new.csv'
 
-auto_update = input("Do you want to download today's data to update the database? Enter Yes or No:  ")         or 'No'
+auto_update = input('''Do you want to download today's data 
+to update the database? Enter Yes or No:  ''') or 'No'
 
 if auto_update.lower() == 'yes':
     today = str(date.today())
