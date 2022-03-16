@@ -1,25 +1,34 @@
-import datetime
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
+
 from datetime import date
 from urllib.request import BaseHandler
 import pandas as pd
 from analyze import modelling_part2 as model
 from collection import auto_update_data
-#from analyze import modelling_part2_class_collect_all as model
 
-# "we now have [214, 215, 216, 217, 218, 222, 223, 224, 225, 228, 301, 302, 303, 304, 307, 308, 310, 311, 314, 315, ]] data in our database, you can choose which days to use as training data and which days as testing (or just press return)"
-TRAINING_DATES = input("Enter training dates (list of dates when the market is open), example: 214 215 216 217 218 222 223 (or just press return button if you want the default value) : ")        or [214, 215, 216, 217, 218, 222, 223, 224, 225]
+
+auto_update = input("Do you want to download today's data to update the database? Enter Yes or No:  ")   or 'No'
+
+
+TRAINING_DATES = input("""Enter training dates (list of dates when the market is open), 
+        example: 214 215 216 217 218 222 223 
+        (or just press return button if you want the default value) : """) or [214, 215, 216, 217, 218, 222, 223, 224, 225]
+
 if type(TRAINING_DATES) is not list:
     TRAINING_DATES =  TRAINING_DATES.split()
     TRAINING_DATES = [int(x) for x in TRAINING_DATES ]
 
-TESTING_DATES = input("Enter testing dates (list of dates >= length 2), example: 301 302 (or just press return button if you want the default value) : ")         or [228, 301, 302]
+TESTING_DATES = input("""
+Enter testing dates (list of dates >= length 2),
+example: 301 302 (or just press return button if you want the default value) : """) or [228, 301, 302]
 if type(TESTING_DATES) is not list:
     TESTING_DATES =  TESTING_DATES.split()
     TESTING_DATES = [int(x) for x in TESTING_DATES ]
-
-Y_FILENAME = 'analyze_tweets/data/SP500_new.csv'
-
-auto_update = input("Do you want to download today's data to update the database? Enter Yes or No:  ")         or 'No'
 
 if auto_update.lower() == 'yes':
     today = str(date.today())
@@ -29,12 +38,18 @@ if auto_update.lower() == 'yes':
     Y_FILENAME = 'analyze_tweets/data/y_file_update.csv'
     TESTING_DATES.append(day)
 
+else:
+    Y_FILENAME = 'analyze_tweets/data/SP500_new.csv'
+
+
 
 TOPIC = ['china', 'covid']
 STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
     'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
    'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
 MODELNAME = ['linear','logistic','KNN', 'SVM']
+
+print(TRAINING_DATES)
 
 all_models = model.process_all_model(MODELNAME, TRAINING_DATES,
     TOPIC, Y_FILENAME, STOCK, TESTING_DATES)
@@ -162,3 +177,4 @@ def get_top_3_sectors(df):
     dframe = pd.DataFrame(list_tuples, columns=['Topic', 'Model',"Top 3 Sectors"])  
     
     return dframe
+
