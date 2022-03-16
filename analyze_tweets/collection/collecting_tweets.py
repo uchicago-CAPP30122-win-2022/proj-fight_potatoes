@@ -8,6 +8,13 @@ CLIENT = tweepy.Client(bearer_token=BEARER_TOKEN)
 
 def collect_tweets(topic, date, client = CLIENT):
     """
+    collect tweets using twitter API
+
+    input:
+        topic: a stirng, eg: "china" or "covid"
+    
+    return:
+        saved in csv
     """
     if topic == "covid":
         # covid query
@@ -18,7 +25,7 @@ def collect_tweets(topic, date, client = CLIENT):
         query = '(China (Trump OR Biden OR trade war OR Xi Jinping OR Eileen Gu OR Taiwan        OR Hong Kong OR CCP OR TikTok OR Huawei OR tariffs OR human rights OR Xinjiang OR Zhao Lijian        OR Ned Price)) lang:en -is:retweet'
     
     day_txt = "0" + date[6] + date[8:10]
-    file_name = f'data/tweets_{topic}_{day_txt}22.csv'
+    file_name = f'analyze_tweets/data/tweets_{topic}_{day_txt}22.csv'
 
     with open(file_name, 'w') as f:
 #     with open(file_name, 'a+') as f:
