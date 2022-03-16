@@ -19,6 +19,15 @@ All possible dates for training/testing dates:
 214 215 216 217 218 222 223 224 225 301 302 303 304 307 314 315
 ```
 
+Default training dates:
+```bash
+214 215 216 217 218 222 223 224 225 301 302
+```
+
+Default testing dates:
+```bash
+303 304 307 314 315
+```
 
 ## Example Output
 Part 1:
