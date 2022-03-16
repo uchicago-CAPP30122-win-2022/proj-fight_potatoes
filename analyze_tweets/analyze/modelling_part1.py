@@ -165,7 +165,7 @@ def collect_all_x_and_y(dates, topics, y_filename, stocks):
     return(tuple): a tuple of average polarity and average subjectivity
     """
     print("---> working on extracting sentiment indicator")
-    
+
     x_dic = {}
     for topic in topics:
         x_dic[topic] = collect_x(dates, topic)
