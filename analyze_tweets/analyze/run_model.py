@@ -49,7 +49,6 @@ STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
    'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
 MODELNAME = ['linear','logistic','KNN', 'SVM']
 
-print(TRAINING_DATES)
 
 all_models = model.process_all_model(MODELNAME, TRAINING_DATES,
     TOPIC, Y_FILENAME, STOCK, TESTING_DATES)
