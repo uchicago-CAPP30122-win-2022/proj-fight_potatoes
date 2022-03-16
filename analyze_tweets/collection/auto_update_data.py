@@ -9,7 +9,7 @@ from collection import update
 def auto_update(today):
     """
     """
-    
+    ### THIS PATH ISNT WORKING FOR ME FOR SOME REASON
     comp = pd.read_csv('data/constituents.csv')
     comp_lst = pd.Series(comp['Symbol']).str.replace(".", '-')
     comp_lst = list(comp_lst)

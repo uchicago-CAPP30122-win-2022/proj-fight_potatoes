@@ -2,17 +2,24 @@ import datetime
 from datetime import date
 from urllib.request import BaseHandler
 import pandas as pd
-#from analyze import modelling_part2 as model
-#from collection import auto_update_data
-from analyze import modelling_part2_class_collect_all as model
+from analyze import modelling_part2 as model
+from collection import auto_update_data
+#from analyze import modelling_part2_class_collect_all as model
 
 # "we now have [214, 215, 216, 217, 218, 222, 223, 224, 225, 228, 301, 302, 303, 304, 307, 308, 310, 311, 314, 315, ]] data in our database, you can choose which days to use as training data and which days as testing (or just press return)"
-TRAINING_DATES = list(input("Enter training dates (list of dates when the market is open), example: [214, 215, 216, 217, 218, 222, 223] (or just press return button if you want the default value) : ")         or [214, 215, 216, 217, 218, 222, 223, 224, 225])
-TESTING_DATES = list(input("Enter testing dates (list of dates >= length 2), example: [301, 302] (or just press return button if you want the default value) : ")         or [228, 301, 302])
-###### UPDATE THIS ######
-Y_FILENAME = 'data/SP500_constituents_update.csv'
-'''
-auto_update = input("Do you want to download today's data to update the database? Enter Yes or No: ")         or 'No'
+TRAINING_DATES = input("Enter training dates (list of dates when the market is open), example: 214 215 216 217 218 222 223 (or just press return button if you want the default value) : "         or [214, 215, 216, 217, 218, 222, 223, 224, 225])
+if type(TRAINING_DATES) is not list:
+    TRAINING_DATES =  TRAINING_DATES.split()
+    TRAINING_DATES = [int(x) for x in TRAINING_DATES ]
+
+TESTING_DATES = input("Enter testing dates (list of dates >= length 2), example: 301 302 (or just press return button if you want the default value) : ")         or [228, 301, 302]
+if type(TESTING_DATES) is not list:
+    TESTING_DATES =  TESTING_DATES.split()
+    TESTING_DATES = [int(x) for x in TESTING_DATES ]
+
+Y_FILENAME = 'data/SP500_new.csv'
+
+auto_update = input("Do you want to download today's data to update the database? Enter Yes or No:  ")         or 'No'
 
 if auto_update.lower() == 'yes':
     today = str(date.today())
@@ -21,19 +28,20 @@ if auto_update.lower() == 'yes':
     auto_update_data.auto_update(today)
     Y_FILENAME = 'data/y_file_update.csv'
     TESTING_DATES.append(day)
-'''
+
 
 TOPIC = ['china', 'covid']
-#STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
+STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
 #    'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
 #   'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
-STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
+#STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
     'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
    'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
 MODELNAME = ['linear','logistic','KNN', 'SVM']
 
 all_models = model.process_all_model(MODELNAME, TRAINING_DATES,
     TOPIC, Y_FILENAME, STOCK, TESTING_DATES)
+
 
 def to_df(model_object):
     '''
@@ -78,8 +86,8 @@ def concat(model_dict = all_models):
 
     for name, model in model_dict.items():
         sector, topic, model_name = str.split(name, '_')
-        #if sector == 'SPY':
-        if sector == 'Close':
+        if sector == 'SPY':
+        #if sector == 'Close':
             sector = 'All Sectors'
         tr, te = to_df(model)
         tr['model'] = te ['model'] = model_name
@@ -111,7 +119,7 @@ def each_model(df, model_name):
     return top_3
 
 
-def GetTheTopThreeSectors(df):
+def top_3_sectors(df):
     '''
     This function takes a pandas dataframe.
     For each topic(china/covid),
@@ -130,7 +138,7 @@ def GetTheTopThreeSectors(df):
     topic = ['China','China','China','China',"Covid","Covid","Covid","Covid"]
     
     # List 2
-    classifer = ['Linear','Logit','KNN','SVMLinear','Linear','Logit','KNN','SVMLinear']
+    model = ['Linear','Logit','KNN','SVM','Linear','Logit','KNN','SVM']
     
     #list 3 
     
@@ -159,10 +167,10 @@ def GetTheTopThreeSectors(df):
     
     
     # and merge them by using zip().  
-    list_tuples = list(zip(topic, classifer,top_3_sectors)) 
+    list_tuples = list(zip(topic, model, top_3_sectors)) 
     new_list_tuples = '  '.join(str(list_tuples))
     
     # Converting lists of tuples into pandas Dataframe.  
-    dframe = pd.DataFrame(list_tuples, columns=['topic', 'classifier',"top 3 sectors"])  
+    dframe = pd.DataFrame(list_tuples, columns=['topic', 'model',"top 3 sectors"])  
     
     return dframe

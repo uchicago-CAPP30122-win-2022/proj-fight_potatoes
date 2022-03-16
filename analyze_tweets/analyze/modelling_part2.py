@@ -39,8 +39,11 @@ def process_all_model(modelname, dates, topics, y_datafile, stocks, test_date):
     print("++++++++++++++++++++ starting to train models ++++++++++++++++++++++++++")
     all_model = {}
     
-    selection_on_x = list(input("Now you can select from polarity(0), subjectivity(1), moving average(2) as the regressors, example: [0, 1] (or just press return button if you want them all) : ") \
-        or [0,1,2])
+    selection_on_x = input("Now you can select from polarity(0), subjectivity(1), moving average(2) as the regressors, example: 0 1 (or just press return button if you want them all) : ") \
+        or [0,1,2]
+    if type(selection_on_x) is not list:
+        selection_on_x =  selection_on_x.split()
+        selection_on_x = [int(x) for x in selection_on_x ]
 
     for topic_name in topics:
         for stock_name in stocks:
@@ -67,9 +70,10 @@ def select_on_xs(selection_on_x, x1_x2, x3):
 
     Returns: 
     """
-    # print(f"x1_x2 is {x1_x2}")
-    # print(f"x1_x2[0] is {x1_x2[0]}")
-    # print(f"x1_x2[0] is {x1_x2[:,[0]]}")
+    print(f"x1_x2 is {x1_x2}")
+    #print(f"x1_x2[0] is {x1_x2[0]}")
+    #print(f"x1_x2[0] is {x1_x2[:,0]}")
+    print(type(x1_x2))
 
     training_x = []
     if 0 in selection_on_x:
