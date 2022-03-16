@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 from dash.dependencies import Input, Output
 from analyze import run_model as rm
-#from analyze import modelling_part2_class_collect_0312 as model
 
 
 # run models and get training and testing data outputs
@@ -21,7 +20,7 @@ test['date'] = 2022000 + test.dt
 test['date'] = pd.to_datetime(test['date'], format='%Y%m%d')
 test['date'] = test['date'].dt.date
 
-df = pd.read_csv("test_data - Sheet1.csv")
+df = rm.GetTheTopThreeSectors(test)
 
 app = dash.Dash()
 
@@ -89,7 +88,7 @@ app.layout = html.Div([
         html.H3('Model fit for the training data', style = {'padding': '3px'}),
         dcc.Graph(id = 'training_plot'),
 
-        html.H1("Accuracy of each classifier per sector — Top 5", 
+        html.H1("Accuracy of each classifier per sector — Top 3", 
             style={'textAlign': 'center', 'color': '#7FDBFF'}),
         dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns]),
 
@@ -123,6 +122,17 @@ def set_sector_value(available_options):
             Input('sector_dropdown', 'value')])
 
 def graph_update(topic, model_value, sector_value):
+    '''
+    Update first graph (for test data output)
+
+    Inputs:
+        topic (str): 'covid' or 'china'
+        model_value (str): 'linear', 'logistic', 'KNN', or 'SVM'
+        sector_value (str): one of the 11 sectors or 'All Sectors'
+            for entire S&P 500 Index
+    Returns:
+        fig: graph
+    '''
     if model_value == 'linear':
         df1 = test[(test['topic'] == topic) & (test['sector'] == sector_value) & (test['model'] == model_value)]
         fig = go.Figure(go.Scatter(x = df1['date'], y = df1['actual'], 
@@ -157,6 +167,13 @@ def graph_update(topic, model_value, sector_value):
 @app.callback(Output('tabs-content-inline', 'children'),
               Input('tabs-styled-with-inline', 'value'))
 def render_content(tab):
+    '''
+    Render content for each tab based on user
+
+    Input: tab
+
+    Returns: content of each tab
+    '''
     if tab == 'About':
         return html.Div([
             html.H3("""
@@ -175,8 +192,9 @@ def render_content(tab):
         return html.Div([
                     html.H3('''
                         Tweets were collected from the Twitter Developer API. 
-                        We gathered XXXX tweets related to COVID-19 and 
-                        US-China Relations from DATE1 to DATE2. 
+                        We gathered tweets related to COVID-19 and 
+                        US-China Relations from February 14, 2022 to 
+                        March 15, 2022. 
                         '''),
                     html.H3(
                         'The query keywords used to collect tweets are as follows: '),
@@ -220,7 +238,19 @@ def render_content(tab):
             [Input('topic_dropdown', 'value'),
             Input('model_dropdown', 'value'),
             Input('sector_dropdown', 'value')])
+
 def graph_update_tr(topic, model_value, sector_value):
+    '''
+    Update second graph (for training data output)
+
+    Inputs:
+        topic (str): 'covid' or 'china'
+        model_value (str): 'linear', 'logistic', 'KNN', or 'SVM'
+        sector_value (str): one of the 11 sectors or 'All Sectors'
+            for entire S&P 500 Index
+    Returns:
+        fig1: graph
+    '''
     if model_value == 'linear':
         tr1 = train[(train['topic'] == topic) & (train['sector'] == sector_value) & (train['model'] == model_value)]
         fig1 = go.Figure(go.Scatter(x = tr1['date'], y = tr1['true_y'], 
