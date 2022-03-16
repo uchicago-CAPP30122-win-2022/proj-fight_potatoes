@@ -69,9 +69,9 @@ def select_on_xs(select_on_x, x1_x2, x3):
     """
     training_x = []
     if 0 in select_on_x:
-        training_x.append(x1_x2[:, 0])
+        training_x.append(x1_x2[0][:, 0])
     if 1 in select_on_x:
-        training_x.append(x1_x2[:, 1])
+        training_x.append(x1_x2[0][:, 1])
     if 2 in select_on_x:
         training_x.append(x3)
         
