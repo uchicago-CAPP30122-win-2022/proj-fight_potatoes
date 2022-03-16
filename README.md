@@ -13,4 +13,6 @@ pip install -r requirements.txt
 python3 analyze_tweets/app.py
 ```
 
-![Alt text](Screen Shot 2022-03-16 at 11.42.16 AM.png?raw=true "Title")
+## Example Output
+![Alt text](pic_part1.png?raw=true "Title")
+![Alt text](pic_part2.png?raw=true "Title")
