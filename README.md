@@ -14,5 +14,8 @@ python3 analyze_tweets/app.py
 ```
 
 ## Example Output
+Part 1:
 ![Alt text](pic_part1.png?raw=true "Title")
+
+Part 2:
 ![Alt text](pic_part2.png?raw=true "Title")
