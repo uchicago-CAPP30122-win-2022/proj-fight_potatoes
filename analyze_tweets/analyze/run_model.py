@@ -2,30 +2,34 @@ import datetime
 from datetime import date
 from urllib.request import BaseHandler
 import pandas as pd
-from analyze import modelling_part2 as model
-from collection import auto_update_data
+#from analyze import modelling_part2 as model
+#from collection import auto_update_data
+from analyze import modelling_part2_class_collect_all as model
 
 # "we now have [214, 215, 216, 217, 218, 222, 223, 224, 225, 228, 301, 302, 303, 304, 307, 308, 310, 311, 314, 315, ]] data in our database, you can choose which days to use as training data and which days as testing (or just press return)"
-TRAINING_DATES = list(input("Enter training dates (list of dates when the market is open), example: [214, 215, 216, 217, 218, 222, 223] (or just press return button if you want the defult value) : ")         or [214, 215, 216])
-TESTING_DATES = list(input("Enter testing dates (list of dates), example: [301, 302] (or just press return button if you want the defult value) : ")         or [301])
+TRAINING_DATES = list(input("Enter training dates (list of dates when the market is open), example: [214, 215, 216, 217, 218, 222, 223] (or just press return button if you want the default value) : ")         or [214, 215, 216, 217, 218, 222, 223, 224, 225])
+TESTING_DATES = list(input("Enter testing dates (list of dates >= length 2), example: [301, 302] (or just press return button if you want the default value) : ")         or [228, 301, 302])
 ###### UPDATE THIS ######
 Y_FILENAME = 'data/SP500_constituents_update.csv'
+'''
+auto_update = input("Do you want to download today's data to update the database? Enter Yes or No: ")         or 'No'
 
-auto_update = list(input("Do youwant to download today's data to update the database? Enter Yes or No ")         or 'No')
-
-if auto_update:
+if auto_update.lower() == 'yes':
     today = str(date.today())
     day = today.split("-")
     day = int(day[1] + day[2])
     auto_update_data.auto_update(today)
     Y_FILENAME = 'data/y_file_update.csv'
     TESTING_DATES.append(day)
-
+'''
 
 TOPIC = ['china', 'covid']
-STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
+#STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
+#    'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
+#   'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
+STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
     'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
-    'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
+   'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
 MODELNAME = ['linear','logistic','KNN', 'SVM']
 
 all_models = model.process_all_model(MODELNAME, TRAINING_DATES,
@@ -74,7 +78,8 @@ def concat(model_dict = all_models):
 
     for name, model in model_dict.items():
         sector, topic, model_name = str.split(name, '_')
-        if sector == 'SPY':
+        #if sector == 'SPY':
+        if sector == 'Close':
             sector = 'All Sectors'
         tr, te = to_df(model)
         tr['model'] = te ['model'] = model_name
