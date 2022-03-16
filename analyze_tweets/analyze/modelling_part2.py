@@ -141,6 +141,7 @@ class TrainingModel:
         y_dummy, y_num, Xs = self.training_data
 
         if model_name == "linear":
+            print(Xs)
             X2 = sm.add_constant(Xs)
             model_1 = sm.OLS(y_num, X2)
             model = model_1.fit()
@@ -148,7 +149,7 @@ class TrainingModel:
             self.fitted_value = model.predict()
             if test:
                 test_x = self.testing_data[2]
-                update_test_x = sm.add_constant(test_x) 
+                update_test_x = sm.add_constant(test_x)
                 self.prediction = model.predict(update_test_x)
                 self.true_testing_y = self.testing_data[1]
                 self.test_accuracy = "Not applicable to linear model"
