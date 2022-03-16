@@ -32,10 +32,6 @@ def process_all_model(modelname, dates, topics, y_datafile, stocks, test_date):
     else:
         testing_data = None
     
-    # print(f'x3_dic is {x3_dic}')
-    # print(f'x_dic is {x_dic}')
-    # print(f'x3_dic_test is {x3_dic_test}')
-    # print(f'x_dic_test is {x_dic_test}')
     print("++++++++++++++++++++ starting to train models ++++++++++++++++++++++++++")
     all_model = {}
     

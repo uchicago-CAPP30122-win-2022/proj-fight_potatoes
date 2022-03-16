@@ -20,7 +20,7 @@ test['date'] = 2022000 + test.dt
 test['date'] = pd.to_datetime(test['date'], format='%Y%m%d')
 test['date'] = test['date'].dt.date
 
-df = rm.top_3_sectors(test)
+df = rm.get_top_3_sectors(test)
 
 app = dash.Dash()
 

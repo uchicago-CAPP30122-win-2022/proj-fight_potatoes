@@ -58,7 +58,6 @@ def collect_y(dates, y_datafile, stock):
         y_dummy:
         y_num:
     """
-
     y_num = []
     y_dummy = [] 
 
@@ -70,7 +69,6 @@ def collect_y(dates, y_datafile, stock):
             preceding_date = y_datafile.index[preceding_index]
             y_num.append(y_datafile.loc[preceding_date][stock])
         y_num.append(y_datafile.loc[day_text][stock])
-
     starting_y = y_num[0]        
     for y in y_num[1:]:
         if y > starting_y:

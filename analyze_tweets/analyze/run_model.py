@@ -7,7 +7,7 @@ from collection import auto_update_data
 #from analyze import modelling_part2_class_collect_all as model
 
 # "we now have [214, 215, 216, 217, 218, 222, 223, 224, 225, 228, 301, 302, 303, 304, 307, 308, 310, 311, 314, 315, ]] data in our database, you can choose which days to use as training data and which days as testing (or just press return)"
-TRAINING_DATES = input("Enter training dates (list of dates when the market is open), example: 214 215 216 217 218 222 223 (or just press return button if you want the default value) : "         or [214, 215, 216, 217, 218, 222, 223, 224, 225])
+TRAINING_DATES = input("Enter training dates (list of dates when the market is open), example: 214 215 216 217 218 222 223 (or just press return button if you want the default value) : ")        or [214, 215, 216, 217, 218, 222, 223, 224, 225]
 if type(TRAINING_DATES) is not list:
     TRAINING_DATES =  TRAINING_DATES.split()
     TRAINING_DATES = [int(x) for x in TRAINING_DATES ]
@@ -17,7 +17,7 @@ if type(TESTING_DATES) is not list:
     TESTING_DATES =  TESTING_DATES.split()
     TESTING_DATES = [int(x) for x in TESTING_DATES ]
 
-Y_FILENAME = 'data/SP500_new.csv'
+Y_FILENAME = 'analyze_tweets/data/SP500_new.csv'
 
 auto_update = input("Do you want to download today's data to update the database? Enter Yes or No:  ")         or 'No'
 
@@ -26,15 +26,12 @@ if auto_update.lower() == 'yes':
     day = today.split("-")
     day = int(day[1] + day[2])
     auto_update_data.auto_update(today)
-    Y_FILENAME = 'data/y_file_update.csv'
+    Y_FILENAME = 'analyze_tweets/data/y_file_update.csv'
     TESTING_DATES.append(day)
 
 
 TOPIC = ['china', 'covid']
 STOCK = ["SPY", 'Industrials' , 'Health Care', 'Information Technology',
-#    'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
-#   'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
-#STOCK = ["Close", 'Industrials' , 'Health Care', 'Information Technology',
     'Communication Services' , 'Consumer Staples', 'Consumer Discretionary',
    'Utilities', 'Financials', 'Materials', 'Real Estate', 'Energy']
 MODELNAME = ['linear','logistic','KNN', 'SVM']
@@ -87,7 +84,6 @@ def concat(model_dict = all_models):
     for name, model in model_dict.items():
         sector, topic, model_name = str.split(name, '_')
         if sector == 'SPY':
-        #if sector == 'Close':
             sector = 'All Sectors'
         tr, te = to_df(model)
         tr['model'] = te ['model'] = model_name
@@ -98,47 +94,39 @@ def concat(model_dict = all_models):
     return train, test
 
 
-def each_model(df, model_name):
+def each_model(df,model_name):
     '''
-    Find top 3 performing sectors for a model
-
-    Inputs: 
-        df: output df
-        model_name (str): a model name 
+    Input: a model name 
     
-    Returns:
-        top_3: a list of top 3 sectors
+    Output: a list of top 3 sectors
     '''
-    result= df[df["model"] == model_name].sort_values(by = ["R2"], ascending = False).head(6)
+    result= df[df["model"] == model_name].sort_values(by=["R2"],ascending=False)
     top_3 = []
     for i in result["sector"]:
         if i not in top_3:
-            top_3.append("  ")
-            top_3.append(i)
-            top_3.append("/")
+            if len(top_3) != 9:
+                top_3.append("  ")
+                top_3.append(i)
+                top_3.append("/")
     return top_3
 
 
-def top_3_sectors(df):
+def get_top_3_sectors(df):
     '''
-    This function takes a pandas dataframe.
+    This function collect a pandas dataframe.
     For each topic(china/covid),
     we will get the top 3 sectors that have the highest 
     R-square under different model
     
-    Input:
-        df: a pandas dataframe
-
-    Returns:
-        dframe: a pandas dataframe shows the top 3 sectors
-            with the topic and model
+    Input:a pandas dataframe
+    Output: a pandas dataframe shows the top 3 sectors with the topic and model
     
     '''
     # List 1
     topic = ['China','China','China','China',"Covid","Covid","Covid","Covid"]
     
     # List 2
-    model = ['Linear','Logit','KNN','SVM','Linear','Logit','KNN','SVM']
+    classifer = ['Linear','Logit','KNN','SVM','Linear','Logit','KNN','SVM']
     
     #list 3 
     
@@ -167,10 +155,10 @@ def top_3_sectors(df):
     
     
     # and merge them by using zip().  
-    list_tuples = list(zip(topic, model, top_3_sectors)) 
+    list_tuples = list(zip(topic, classifer,top_3_sectors)) 
     new_list_tuples = '  '.join(str(list_tuples))
     
     # Converting lists of tuples into pandas Dataframe.  
-    dframe = pd.DataFrame(list_tuples, columns=['topic', 'model',"top 3 sectors"])  
+    dframe = pd.DataFrame(list_tuples, columns=['Topic', 'Model',"Top 3 Sectors"])  
     
     return dframe
