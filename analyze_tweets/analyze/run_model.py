@@ -17,7 +17,7 @@ auto_update = input("Do you want to download today's data to update the database
 
 TRAINING_DATES = input("""Enter training dates (list of dates when the market is open), 
         example: 214 215 216 217 218 222 223 
-        (or just press return button if you want the default value) : """) or [214, 215, 216, 217, 218, 222, 223, 224, 225]
+        (or just press return button if you want the default value) : """) or [214, 215, 216, 217, 218, 222, 223, 224, 225, 301, 302]
 
 if type(TRAINING_DATES) is not list:
     TRAINING_DATES =  TRAINING_DATES.split()
@@ -25,7 +25,7 @@ if type(TRAINING_DATES) is not list:
 
 TESTING_DATES = input("""
 Enter testing dates (list of dates >= length 2),
-example: 301 302 (or just press return button if you want the default value) : """) or [228, 301, 302]
+example: 301 302 (or just press return button if you want the default value) : """) or [303, 304, 307, 314, 315]
 if type(TESTING_DATES) is not list:
     TESTING_DATES =  TESTING_DATES.split()
     TESTING_DATES = [int(x) for x in TESTING_DATES ]
